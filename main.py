@@ -1,6 +1,6 @@
 import face_recognition
 
-def verificar_faces(imagem1_path, imagem2_path):
+def verificar_faces(imagem1_path: str, imagem2_path: str) -> bool:
     # Carrega as imagens
     img1 = face_recognition.load_image_file(imagem1_path)
     img2 = face_recognition.load_image_file(imagem2_path)
