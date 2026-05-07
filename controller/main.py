@@ -13,11 +13,11 @@ async def verificar_faces(imagem1_path: str, imagem2_path: str) -> bool:
 
 	# Verifica se encontrou rostos
 	if len(encoding1) == 0:
-		print(f"❌ Nenhum rosto encontrado em {imagem1_path}")
+		print(f"🚫 Nenhum rosto encontrado em {imagem1_path}")
 		return False
 
 	if len(encoding2) == 0:
-		print(f"❌ Nenhum rosto encontrado em {imagem2_path}")
+		print(f"🚫 Nenhum rosto encontrado em {imagem2_path}")
 		return False
 
 	# Compara os rostos
@@ -27,7 +27,7 @@ async def verificar_faces(imagem1_path: str, imagem2_path: str) -> bool:
 		print("🟢 As fotos são da mesma pessoa!")
 		return True
 	else:
-		print("❌ As fotos são de pessoas diferentes!")
+		print("🚫 As fotos são de pessoas diferentes!")
 		return False
 
 
