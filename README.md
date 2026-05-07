@@ -1,6 +1,10 @@
 # face_recognition_system
-Building a face recognion system
+## Project Info
+```markdown
+**Nome:** _FindMyPerson_
 
+**Description:** _Uma plataforma que ajuda os usuários a localizarem alguém perdido por meio de reconhecimento facial. Se alguém desapareceu, na vida real, o usuário vai na plataforma e publica uma foto da pessoa desaparecida e as suas informações de contacto. Se alguém encontrar alguém perdido que por algum motivo não consiga se comunicar, ou os responsáveis por essa pessoa não aparecem basta tirar uma foto da pessoa e colocar ela na categoria de encontrada, o sistema por meio de reconhecimento facial fará o match do rosto, caso o rosto perdido esteja na base de dados de rostos encontrados notifica os usuários._
+```
 
 # Instalation
 ```bash
@@ -47,4 +51,10 @@ def processar_usuario(id: int) -> str:
 
     # Se esquecer de verificar None, mypy avisa!
     return f"Nome: {usuario['nome']}"  # ⚠️ mypy: usuario pode ser None
+```
+
+# Emojis que serão usados ao longo do projeto
+
+``` bash
+🫥☠️👾🥶🥵🌍🌕💤🚫⛔⁉️‼️♊🇦🇴🟢⚠️❌
 ```
