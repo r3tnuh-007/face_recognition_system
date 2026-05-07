@@ -39,6 +39,7 @@ async def task_builder() -> list[bool]:
 	tasks.append(verificar_faces("./img/mb4.jpeg", "./img/mb3.jpeg"))
 	tasks.append(verificar_faces("./img/cm2.jpeg", "./img/mb3.jpeg"))
 	results = await asyncio.gather(*tasks)
+	print(results)
 	return results
 
 

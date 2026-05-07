@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisar Rosto - FaceGallery</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">FaceGallery</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="publicar.html">Publicar Rosto</a></li>
+                <li><a href="pesquisar.html" class="active">Pesquisar Rosto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="page-header">
+            <h2>Pesquisar por Similaridade Facial</h2>
+            <p>Envie uma imagem para encontrar rostos similares no sistema</p>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <div class="form-group">
+                    <label for="searchImage">Imagem para Pesquisa *</label>
+                    <input type="file" id="searchImage" accept="image/*" required>
+                    <small>Envie uma foto com um rosto bem visível</small>
+                </div>
+
+                <div id="searchPreviewContainer" class="preview-container">
+                    <img id="searchPreview" class="preview-image" style="display: none;" alt="Preview">
+                </div>
+
+                <button id="searchBtn" class="btn btn-primary">🔍 Pesquisar Rostos Similares</button>
+            </div>
+
+            <div id="searchResults" class="search-results">
+                <div class="info-text">Os resultados aparecerão aqui...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/pesquisar.js"></script>
+</body>
+</html>

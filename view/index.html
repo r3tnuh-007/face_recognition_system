@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Galeria de Rostos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">FindMyPerson</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Dashboard</a></li>
+                <li><a href="publicar.html">Publicar Rosto</a></li>
+                <li><a href="pesquisar.html">Pesquisar Rosto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="page-header">
+            <h2>Galeria de Rostos Publicados</h2>
+            <p>Visualize todos os rostos cadastrados no sistema</p>
+        </header>
+
+        <div class="controls">
+            <button id="refreshBtn" class="btn btn-primary">↻ Atualizar</button>
+        </div>
+
+        <div id="galleryContainer" class="gallery">
+            <div class="loading">Carregando rostos...</div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
