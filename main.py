@@ -29,4 +29,4 @@ def verificar_faces(imagem1_path: str, imagem2_path: str) -> bool:
 		return False
 
 # Usa a função
-verificar_faces("./img/mb4.jpeg", "./img/mb1.jpeg")
+verificar_faces("./img/cm1.jpeg", "./img/mb3.jpeg")
