@@ -1,6 +1,8 @@
 import face_recognition
+import asyncio
 
-def verificar_faces(imagem1_path: str, imagem2_path: str) -> bool:
+
+async def verificar_faces(imagem1_path: str, imagem2_path: str) -> bool:
 	# Carrega as imagens
 	img1 = face_recognition.load_image_file(imagem1_path)
 	img2 = face_recognition.load_image_file(imagem2_path)
@@ -28,5 +30,17 @@ def verificar_faces(imagem1_path: str, imagem2_path: str) -> bool:
 		print("❌ As fotos são de pessoas diferentes!")
 		return False
 
+
+#Chamar funcao para criar a lista de tarefas
+async def task_builder() -> list[bool]:
+	tasks = []
+	tasks.append(verificar_faces("./img/cm1.jpeg", "./img/mb3.jpeg"))
+	tasks.append(verificar_faces("./img/cm1.jpeg", "./img/mb2.jpeg"))
+	tasks.append(verificar_faces("./img/mb4.jpeg", "./img/mb3.jpeg"))
+	tasks.append(verificar_faces("./img/cm2.jpeg", "./img/mb3.jpeg"))
+	results = await asyncio.gather(*tasks)
+	return results
+
+
 # Usa a função
-verificar_faces("./img/cm1.jpeg", "./img/mb3.jpeg")
+asyncio.run(task_builder())
