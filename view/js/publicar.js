@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://localhost:8000';
 
 // Preview da imagem
 const imagemInput = document.getElementById('imagem');
@@ -63,11 +63,11 @@ publishForm.addEventListener('submit', async (e) => {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Erro ao publicar rosto');
+            throw new Error(error.message || '🚫 Erro ao publicar rosto');
         }
 
         const result = await response.json();
-        mostrarMensagem('✅ Rosto publicado com sucesso!', 'success');
+        mostrarMensagem('🟢 Rosto publicado com sucesso!', 'success');
 
         // Limpar formulário
         publishForm.reset();
@@ -81,7 +81,7 @@ publishForm.addEventListener('submit', async (e) => {
 
     } catch (error) {
         console.error('Erro ao publicar:', error);
-        mostrarMensagem(`❌ Erro: ${error.message}`, 'error');
+        mostrarMensagem(`🚫 Erro: ${error.message}`, 'error');
     }
 });
 
