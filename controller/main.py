@@ -1,12 +1,11 @@
 # main.py
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException, status
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException, status, Request
+from fastapi.responses import JSONResponse, FileResponse
 from pathlib import Path
 import shutil
 import uuid
 from typing import Optional
 import aiofiles
-from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from utils import listar
@@ -129,6 +128,8 @@ async def publicar_rosto(
                 )
             await buffer.write(conteudo)
         # Retornar resposta de sucesso
+        if nome == None:
+            nome = "Unknown"
         print(f"🟢 {nome}, {nome_unico}, {str(caminho_imagem)}, {len(conteudo)}, {imagem.content_type}")
         return JSONResponse(
             status_code=201,
@@ -151,6 +152,22 @@ async def publicar_rosto(
             status_code=500,
             detail=f"Erro interno ao processar upload: {str(e)}"
         )
+
+
+@app.get("/faces/{nome_arquivo}")
+async def obter_imagem(nome_arquivo: str):
+    """
+    Retorna uma imagem salva
+    """
+    # Buscar em toda estrutura de pastas
+    for caminho in UPLOAD_DIR.rglob(nome_arquivo):
+        if caminho.is_file():
+            return FileResponse(
+                caminho,
+                media_type=f"image/{caminho.suffix[1:]}",
+                filename=caminho.name
+            )
+    raise HTTPException(status_code=404, detail="Imagem não encontrada")
 
 
 @app.get("/health")
