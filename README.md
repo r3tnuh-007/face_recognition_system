@@ -108,5 +108,5 @@ uvicorn main:app \
 ## Emojis que serão usados ao longo do projeto
 
 ``` bash
-🫥☠️👾🥶🥵🌍🌕💤🚫⛔⁉️‼️♊🇦🇴🟢⚠️❌
+🫥☠️👾🥶🥵🌍🌕💤🚫⛔⁉️‼️♊🇦🇴🟢⚠️❌😔😞😇
 ```

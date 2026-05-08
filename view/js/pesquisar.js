@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://192.168.8.55:8000';
 
 const searchImage = document.getElementById('searchImage');
 const searchPreview = document.getElementById('searchPreview');
@@ -42,10 +42,13 @@ async function pesquisarRostosSimilares(imagemFile) {
         const formData = new FormData();
         formData.append('imagem', imagemFile);
 
+
+        alert("requisitou");
         const response = await fetch(`${API_BASE_URL}/faces/search`, {
             method: 'POST',
             body: formData
         });
+        alert("saiu");
 
         if (!response.ok) {
             const error = await response.json();
@@ -53,34 +56,36 @@ async function pesquisarRostosSimilares(imagemFile) {
         }
 
         const resultados = await response.json();
+        alert("saiu da requesicao");
 
         if (!resultados || resultados.length === 0) {
-            mostrarResultado('😕 Nenhum rosto similar encontrado.', 'info');
+            mostrarResultado('😔 Nenhum rosto similar encontrado. \nInformaremos assim que encontrarmos a sua pessoa', 'info');
             return;
         }
 
+        alert(resultados[0].imageUrl);
         exibirResultados(resultados);
 
     } catch (error) {
         console.error('Erro na pesquisa:', error);
-        mostrarResultado(`❌ Erro na pesquisa: ${error.message}`, 'error');
+        mostrarResultado(` Erro na pesquisa: ${error.message}`, 'error');
     }
 }
 
 function exibirResultados(resultados) {
     const resultadosHTML = `
         <div class="results-header">
-            <h3>🎯 Resultados Encontrados: ${resultados.length}</h3>
+            <h3>🌍 Resultados Encontrados: ${resultados.length}</h3>
         </div>
         <div class="results-list">
             ${resultados.map(result => `
                 <div class="result-card">
-                    <img src="${result.imageUrl || result.url || 'https://via.placeholder.com/80x80?text=Imagem'}"
+                    <img src="${result.imageUrl || result.url}"
                          alt="${result.nome || 'Rosto'}"
                          class="result-image"
                          onerror="this.src='https://via.placeholder.com/80x80?text=Erro'">
                     <div class="result-info">
-                        <div class="result-name">${result.nome || 'Anônimo'}</div>
+                        <div class="result-name">${result.nome}</div>
                         <div class="result-similarity">
                             Similaridade: ${(result.similarity * 100).toFixed(2)}%
                         </div>
@@ -101,7 +106,7 @@ function mostrarResultado(mensagem, tipo) {
     switch(tipo) {
         case 'error':
             className = 'message error';
-            icon = '❌';
+            icon = '🚫';
             break;
         case 'loading':
             className = 'loading';
@@ -109,7 +114,7 @@ function mostrarResultado(mensagem, tipo) {
             break;
         case 'info':
             className = 'info-text';
-            icon = 'ℹ️';
+            icon = '⚠️';
             break;
         default:
             className = 'info-text';
