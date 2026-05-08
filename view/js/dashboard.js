@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/api'; // Ajuste conforme seu backend
+const API_BASE_URL = 'http://192.168.8.55:8000'; // Ajuste conforme seu backend
 
 async function carregarRostos() {
     const galleryContainer = document.getElementById('galleryContainer');
@@ -35,7 +35,7 @@ function exibirRostos(faces) {
 
     galleryContainer.innerHTML = faces.map(face => `
         <div class="face-card" data-id="${face.id}">
-            <img src="${face.imageUrl || face.url || 'https://via.placeholder.com/250x250?text=Sem+Imagem'}"
+            <img src="${face.imageUrl}"
                  alt="${face.nome || 'Rosto'}"
                  class="face-image"
                  onerror="this.src='https://via.placeholder.com/250x250?text=Erro+Imagem'">
@@ -60,7 +60,7 @@ let autoRefreshInterval;
 
 function iniciarAutoRefresh() {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    autoRefreshInterval = setInterval(carregarRostos, 30000);
+    autoRefreshInterval = setInterval(carregarRostos, 300000);
 }
 
 // Event Listeners
