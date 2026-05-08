@@ -1,9 +1,9 @@
 # Face recognition system - FindMyPerson 🌕
 ## Project Info
 
-**Nome:** ***FindMyPerson 🌕***
+**Nome:** ***FindMyPerson*** 🌕
 
-**Developers:** ***r3tnuh - 🥶***
+**Developers:** ***r3tnuh*** 🥶
 
 **Architecture Pattern:** ***MVC - Model(Midleware) View Controller ⚠️***
 
@@ -15,7 +15,7 @@ o sistema por meio de reconhecimento facial fará o match do rosto, caso o rosto
 rostos encontrados notifica os usuários._
 
 
-# Instalation
+## Instalation
 ```bash
 python3 -m venv .venv
 source .venv/bin/active.fish
@@ -23,28 +23,28 @@ pip install -r requirements.txt
 python3 main.py
 ```
 
-# Extra with mypy
-## mypy instalation
+## Extra with mypy
+### mypy instalation
 ```bash
 pip install mypy -> but it is already in the requirements.txt
 ```
 
-## A file verification
+### A file verification
 ```bash
 mypy meu_codigo.py
 ```
 
-## A folder verification
+### A folder verification
 ```bash
 mypy src/
 ```
 
-## Ignore libraries without type hint
+### Ignore libraries without type hint
 ```bash
 mypy --ignore-missing-imports meu_codigo.py
 ```
 
-### Exemplo de uso do mypy
+#### Exemplo de uso do mypy
 
 ```python
 from typing import Optional
@@ -62,7 +62,50 @@ def processar_usuario(id: int) -> str:
     return f"Nome: {usuario['nome']}"  # ⚠️ mypy: usuario pode ser None
 ```
 
-# Emojis que serão usados ao longo do projeto
+## Uvicorn Instrutions
+
+### Modo Desenvolvimento (com recarga automática)
+```bash
+# Recarrega automaticamente quando arquivos mudam
+uvicorn main:app --reload
+
+# Especificando host e porta
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# Com mais detalhes de log
+uvicorn main:app --reload --log-level debug
+```
+### Explição
+```text
+uvicorn main:app
+         │    │
+         │    └─ Nome da variável/instância do FastAPI dentro do arquivo
+         └────── Nome do arquivo Python (sem o .py)
+```
+
+
+### Modo Produção (alta performance)
+
+```bash
+# Configuração recomendada para produção
+uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4 --loop uvloop --http httptools
+
+# Com todas as otimizações
+uvicorn main:app \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --workers 4 \
+  --loop uvloop \
+  --http httptools \
+  --limit-concurrency 1000 \
+  --backlog 2048 \
+  --timeout-keep-alive 5
+```
+
+### Explicação dos Parâmetros de Performance
+![alt text](image.png)
+
+## Emojis que serão usados ao longo do projeto
 
 ``` bash
 🫥☠️👾🥶🥵🌍🌕💤🚫⛔⁉️‼️♊🇦🇴🟢⚠️❌
