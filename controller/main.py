@@ -8,7 +8,7 @@ from typing import Optional
 import aiofiles
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-from utils import listar
+from utils import listar, face_check
 
 app = FastAPI(
     title="API de Alta Performance",
@@ -128,6 +128,13 @@ async def publicar_rosto(
                 )
             await buffer.write(conteudo)
         # Retornar resposta de sucesso
+        face =  await face_check.check_face(caminho_imagem)
+        if (not face):
+            return JSONResponse(
+                status_code=401,
+                content={
+                "message": "Face not detected"
+            })
         if nome == None:
             nome = "Unknown"
         print(f"🟢 {nome}, {nome_unico}, {str(caminho_imagem)}, {len(conteudo)}, {imagem.content_type}")
