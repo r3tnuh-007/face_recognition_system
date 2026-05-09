@@ -9,6 +9,7 @@ import aiofiles
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from utils import listar, face_check, valid_image
+import os
 
 app = FastAPI(
     title="API de Alta Performance",
@@ -18,50 +19,77 @@ app = FastAPI(
 origin = [
     "http://localhost:8000",
     "http://localhost:4242",
-    "http://canned-tainted-washstand.ngrok-free.dev"
+    "http://canned-tainted-washstand.ngrok-free.dev",
+    "https://canned-tainted-washstand.ngrok-free.dev"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],		# Quais sites podem chamar sua API
-    allow_credentials=False,	# Permite cookies/auth headers
+    allow_credentials=True,	# Permite cookies/auth headers
     allow_methods=["*"],		# Permite todos os métodos (GET, POST, etc)
     allow_headers=["*"],		# Permite todos os headers
 )
 
 
 # Configurações
-UPLOAD_DIR = Path("img/lost")
+UPLOAD_DIR = Path("img")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-
-UPLOAD_DIR_FOUND = Path("img/found")
-UPLOAD_DIR_FOUND.mkdir(parents=True, exist_ok=True)
 
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 
 @app.get("/")
 async def home():
-    return {"mensagem": "Face recognition rodando com alta performance!"}
+    return {"mensagem": "Face recognition rodando com alta performance!",
+            "Owner": "r3tnuh-007"
+            }
+
+
+@app.get("/images/{caminho_completo:path}")
+async def servir_imagem_simples(caminho_completo: str):
+    """
+    Endpoint mais flexível para servir imagens
+    Exemplo: /images/lost/2026/05/foto.jpg
+    """
+    # Garantir que só acessa a pasta img
+    if '..' in caminho_completo:
+        raise HTTPException(status_code=403, detail="Caminho inválido")
+    caminho_arquivo = os.path.join("img/", caminho_completo)
+    if not os.path.exists(caminho_arquivo):
+        raise HTTPException(status_code=404, detail="Imagem não encontrada")
+    # Determinar media type
+    extensao = os.path.splitext(caminho_arquivo)[1].lower()
+    media_types = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.gif': 'image/gif',
+        '.webp': 'image/webp'
+    }
+    return FileResponse(
+        caminho_arquivo,
+        media_type=media_types.get(extensao, 'application/octet-stream')
+    )
 
 
 @app.post("/dashboard")
 async def faces_dashboard():
-    data_atual = datetime.now()
-    absolute = "img/lost/" + str(data_atual.year) + f"/{data_atual.month:02d}/"
+    absolute = "img/"
     try:
         arquivos = listar.listar_arquivos(absolute)
     except:
         print("Caminho invalido")
     id = 0
     result = []
+    base_url = "http://canned-tainted-washstand.ngrok-free.dev/"
     for arquivo in arquivos:
         nome = str(arquivo)
         result.append(
             {
                 "id": id,
                 "nome": nome,
-                "imageUrl": absolute + arquivo
+                "imageUrl": base_url + "images/" + nome
                 })
         id += 1
     print(f"TIME:	  {datetime.now().strftime('%Hh%Mm%Ss.%f')}")
@@ -89,9 +117,7 @@ async def search_face(
             detail=f"Extensão não permitida. Use: {', '.join(ALLOWED_EXTENSIONS)}"
             )
         # Criar estrutura de pastas por data
-        data_atual = datetime.now()
-        pasta_data = UPLOAD_DIR_FOUND / str(data_atual.year) / f"{data_atual.month:02d}"
-        pasta_data.mkdir(parents=True, exist_ok=True)
+        pasta_data = UPLOAD_DIR
         # Gerar nome único
         extensao = Path(imagem.filename).suffix.lower()
         nome = "Unknown"
@@ -126,7 +152,7 @@ async def search_face(
                 "id": 42,
                 "nome": nome,
                 "arquivo": nome_unico,
-                "imageUrl": "../controller/img/found/2026/05/20260508_132212_Unknown_6d15db23.jpg",
+                "imageUrl": str(caminho_imagem),
                 "tamanho": len(conteudo),
                 "tipo": imagem.content_type,
                 "data_upload": datetime.now().isoformat(),
@@ -176,9 +202,7 @@ async def publicar_rosto(
             detail=f"Extensão não permitida. Use: {', '.join(ALLOWED_EXTENSIONS)}"
             )
         # Criar estrutura de pastas por data
-        data_atual = datetime.now()
-        pasta_data = UPLOAD_DIR / str(data_atual.year) / f"{data_atual.month:02d}"
-        pasta_data.mkdir(parents=True, exist_ok=True)
+        pasta_data = UPLOAD_DIR
         # Gerar nome único
         extensao = Path(imagem.filename).suffix.lower()
         nome_base = nome.replace(" ", "_") if nome else "rosto"
@@ -250,19 +274,3 @@ async def obter_imagem(nome_arquivo: str):
 async def health_check():
     return {"status": "ok", "server": "uvicorn"}
 
-
-# Rota que simula processamento rápido
-@app.get("/rapido")
-async def rota_rapida():
-    hora = datetime.now()
-    print(f"TIME:	  {hora.strftime('%Hh%Mm%Ss.%f')}")
-    return {"tempo": "Imediato",
-            "datetime": hora.strftime('%Hh%Mm%Ss')}
-
-
-# Rota com I/O simulada
-@app.post("/faces/search")
-async def io_bound():
-    import asyncio
-    await asyncio.sleep(0.1)  # Simula consulta banco/API
-    return {"processado": "após 100ms"}
