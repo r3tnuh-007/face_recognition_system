@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://canned-tainted-washstand.ngrok-free.dev/';
+const API_BASE_URL = 'https://canned-tainted-washstand.ngrok-free.dev';
 
 // Preview da imagem
 const imagemInput = document.getElementById('imagem');

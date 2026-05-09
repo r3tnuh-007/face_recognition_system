@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://canned-tainted-washstand.ngrok-free.dev/'; // Ajuste conforme seu backend
+const API_BASE_URL = 'https://canned-tainted-washstand.ngrok-free.dev'; // Ajuste conforme seu backend
 
 async function carregarRostos() {
     const galleryContainer = document.getElementById('galleryContainer');
