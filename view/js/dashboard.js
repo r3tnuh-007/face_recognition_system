@@ -1,14 +1,14 @@
-const API_BASE_URL = 'https://canned-tainted-washstand.ngrok-free.dev'; // Ajuste conforme seu backend
+const API_BASE_URL = 'https://canned-tainted-washstand.ngrok-free.dev';
 
 async function carregarRostos() {
     const galleryContainer = document.getElementById('galleryContainer');
     galleryContainer.innerHTML = '<div class="loading">Carregando rostos...</div>';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/faces`);
+        const response = await fetch(`${API_BASE_URL}/dashboard`);
 
         if (!response.ok) {
-            throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            throw new Error(`Erro ${response.status}: ${response.statusText}` );
         }
 
         const faces = await response.json();

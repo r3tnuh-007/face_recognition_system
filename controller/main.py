@@ -66,8 +66,8 @@ def validar_imagem(imagem: UploadFile):
     return True
 
 
-@app.get("/faces")
-async def faces() :
+@app.get("/dashboard")
+async def faces():
     data_atual = datetime.now()
     absolute = "img/lost/" + str(data_atual.year) + f"/{data_atual.month:02d}/"
     try:
