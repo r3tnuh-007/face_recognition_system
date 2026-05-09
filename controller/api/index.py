@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from utils import listar, face_check, valid_image
 import os
+from mangum import Mangum
 
 app = FastAPI(
     title="API de Alta Performance",
@@ -26,7 +27,7 @@ origin = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],		# Quais sites podem chamar sua API
-    allow_credentials=True,	# Permite cookies/auth headers
+    allow_credentials=True,		# Permite cookies/auth headers
     allow_methods=["*"],		# Permite todos os métodos (GET, POST, etc)
     allow_headers=["*"],		# Permite todos os headers
 )
@@ -274,3 +275,4 @@ async def obter_imagem(nome_arquivo: str):
 async def health_check():
     return {"status": "ok", "server": "uvicorn"}
 
+handler = Mangum(app)

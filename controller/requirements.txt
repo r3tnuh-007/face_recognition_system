@@ -10,6 +10,7 @@ face-recognition-models==0.3.0
 fastapi==0.136.1
 h11==0.16.0
 idna==3.13
+mangum
 numpy==2.2.6
 pillow==12.2.0
 pydantic==2.13.4
