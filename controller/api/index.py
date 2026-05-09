@@ -276,3 +276,5 @@ async def health_check():
     return {"status": "ok", "server": "uvicorn"}
 
 handler = Mangum(app)
+
+__all__ = ['app', 'handler']
