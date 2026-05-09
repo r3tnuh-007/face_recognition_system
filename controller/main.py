@@ -8,7 +8,7 @@ from typing import Optional
 import aiofiles
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-from utils import listar, face_check
+from utils import listar, face_check, valid_image
 
 app = FastAPI(
     title="API de Alta Performance",
@@ -37,37 +37,16 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 UPLOAD_DIR_FOUND = Path("img/found")
 UPLOAD_DIR_FOUND.mkdir(parents=True, exist_ok=True)
 
-# Limites e validações
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
-ALLOWED_MIME_TYPES = {'image/jpeg', 'image/png', 'image/gif', 'image/webp'}
-
 
 @app.get("/")
 async def home():
-    return {"mensagem": "Uvicorn rodando com alta performance!"}
+    return {"mensagem": "Face recognition rodando com alta performance!"}
 
 
-def validar_imagem(imagem: UploadFile):
-    """Validações da imagem"""
-    # Validar extensão
-    extensao = Path(imagem.filename).suffix.lower()
-    if extensao not in ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Extensão não permitida. Use: {', '.join(ALLOWED_EXTENSIONS)}"
-        )
-    # Validar MIME type
-    if imagem.content_type not in ALLOWED_MIME_TYPES:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Tipo de arquivo não permitido. Use: {', '.join(ALLOWED_MIME_TYPES)}"
-        )
-    return True
-
-
-@app.get("/dashboard")
-async def faces():
+@app.post("/dashboard")
+async def faces_dashboard():
     data_atual = datetime.now()
     absolute = "img/lost/" + str(data_atual.year) + f"/{data_atual.month:02d}/"
     try:
@@ -77,12 +56,7 @@ async def faces():
     id = 0
     result = []
     for arquivo in arquivos:
-        if "mb" in arquivo:
-            nome = "Michael B. Jordan"
-        elif "cm" in arquivo:
-            nome = "Cillian Morphy"
-        else:
-            nome = "r3tnuh"
+        nome = str(arquivo)
         result.append(
             {
                 "id": id,
@@ -109,7 +83,11 @@ async def search_face(
                 detail=f"Arquivo muito grande! Máximo: {MAX_FILE_SIZE // 1024 // 1024}MB"
             )
         # Validar tipo de arquivo
-        validar_imagem(imagem)
+        if not valid_image.validar_imagem(imagem):
+            raise HTTPException(
+            status_code=400,
+            detail=f"Extensão não permitida. Use: {', '.join(ALLOWED_EXTENSIONS)}"
+            )
         # Criar estrutura de pastas por data
         data_atual = datetime.now()
         pasta_data = UPLOAD_DIR_FOUND / str(data_atual.year) / f"{data_atual.month:02d}"
@@ -192,7 +170,11 @@ async def publicar_rosto(
                 detail=f"Arquivo muito grande! Máximo: {MAX_FILE_SIZE // 1024 // 1024}MB"
             )
         # Validar tipo de arquivo
-        validar_imagem(imagem)
+        if not valid_image.validar_imagem(imagem):
+            raise HTTPException(
+            status_code=400,
+            detail=f"Extensão não permitida. Use: {', '.join(ALLOWED_EXTENSIONS)}"
+            )
         # Criar estrutura de pastas por data
         data_atual = datetime.now()
         pasta_data = UPLOAD_DIR / str(data_atual.year) / f"{data_atual.month:02d}"

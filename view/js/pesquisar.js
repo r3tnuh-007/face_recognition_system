@@ -43,12 +43,10 @@ async function pesquisarRostosSimilares(imagemFile) {
         formData.append('imagem', imagemFile);
 
 
-        alert("requisitou");
         const response = await fetch(`${API_BASE_URL}/faces/search`, {
             method: 'POST',
             body: formData
         });
-        alert("saiu");
 
         if (!response.ok) {
             const error = await response.json();
@@ -56,14 +54,13 @@ async function pesquisarRostosSimilares(imagemFile) {
         }
 
         const resultados = await response.json();
-        alert("saiu da requesicao");
 
         if (!resultados || resultados.length === 0) {
             mostrarResultado('😔 Nenhum rosto similar encontrado. \nInformaremos assim que encontrarmos a sua pessoa', 'info');
             return;
         }
 
-        alert(resultados[0].imageUrl);
+        alert(resultados[1].imageUrl);
         exibirResultados(resultados);
 
     } catch (error) {

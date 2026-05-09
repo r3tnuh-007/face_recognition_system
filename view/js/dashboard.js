@@ -5,7 +5,11 @@ async function carregarRostos() {
     galleryContainer.innerHTML = '<div class="loading">Carregando rostos...</div>';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/dashboard`);
+        const formData = new FormData();
+        const response = await fetch(`${API_BASE_URL}/dashboard`, {
+        method: 'POST',
+        body: formData
+        });
 
         if (!response.ok) {
             throw new Error(`Erro ${response.status}: ${response.statusText}` );
