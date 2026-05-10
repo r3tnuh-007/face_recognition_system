@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://35.232.113.96:8000';
+const API_BASE_URL = 'http://10.18.32.206:8000';
 
 // Preview da imagem
 const imagemInput = document.getElementById('imagem');

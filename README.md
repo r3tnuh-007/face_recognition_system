@@ -110,3 +110,19 @@ uvicorn main:app \
 ``` bash
 🫥☠️👾🥶🥵🌍🌕💤🚫⛔⁉️‼️♊🇦🇴🟢⚠️❌😔😞😇
 ```
+
+## Subir os arquivos para o servidor da google a partir da pasta google cloud
+
+``` bash
+gcloud compute scp --recurse /home/r3tnuh/Documents/projects/deploy-google findmyperson-backend-r3tnuh:~/findmyperson
+```
+
+
+## Enderecos IP publicos
+
+``` bash
+http://35.232.113.96:8000 #Backend
+```
+
+``` bash
+http://35.232.113.96:4242 #Frontend

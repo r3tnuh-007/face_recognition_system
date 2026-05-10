@@ -3,13 +3,14 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 import json
+from sql_connection.table_creation import *
 
 
-# database.py (continuação)
+# INSERT INFO
 
-def inserir_rosto(conn, dados: Dict[str, Any]) -> Optional[int]:
+def insert_image(conn, dados: Dict[str, Any]) -> Optional[int]:
     """
-    Insere um novo rosto no banco
+    Insere uma nova imagem no banco
     Exemplo de dados: {
         'nome': 'João Silva',
         'nome_arquivo': 'abc123.jpg',
@@ -19,87 +20,95 @@ def inserir_rosto(conn, dados: Dict[str, Any]) -> Optional[int]:
         'metadados': '{"camera": "iPhone"}'
     }
     """
+    create_table_images(conn)  # Garantir que a tabela exista antes de inserir
     query = """
-    INSERT INTO rostos (
-        nome, nome_arquivo, caminho_arquivo,
-        tamanho_arquivo, tipo_arquivo, metadados
-    ) VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO images (
+        nome, user_email, nome_arquivo, status
+    ) VALUES (?, ?, ?, ?)
     """
-
     try:
         cursor = conn.cursor()
         cursor.execute(query, (
-            dados.get('nome'),
+            dados['nome'],
+            dados['user_email'],
             dados['nome_arquivo'],
-            dados['caminho_arquivo'],
-            dados.get('tamanho_arquivo'),
-            dados.get('tipo_arquivo'),
-            dados.get('metadados')
+            dados['status']
         ))
         conn.commit()
         rosto_id = cursor.lastrowid
-        print(f"✅ Rosto inserido com ID: {rosto_id}")
+        print(f"🟢 Rosto inserido com ID: {rosto_id}")
         return rosto_id
-
     except sqlite3.IntegrityError as e:
-        print(f"❌ Erro de integridade: {e}")
+        print(f"🚫 Erro de integridade: {e}")
         return None
     except sqlite3.Error as e:
-        print(f"❌ Erro ao inserir: {e}")
+        print(f"🚫 Erro ao inserir: {e}")
         return None
 
-def inserir_log(conn, rosto_id: int, acao: str, ip: str = None,
-               user_agent: str = None, detalhes: str = None):
-    """Registra log de operação"""
-    query = """
-    INSERT INTO logs_upload (rosto_id, acao, ip_address, user_agent, detalhes)
-    VALUES (?, ?, ?, ?, ?)
+def insert_match(conn, dados: Dict[str, Any]) -> Optional[int]:
     """
-
+    Insere um novo match no banco
+    Exemplo de dados: {
+        'nome_arquivo_lost': 'abc123.jpg',
+        'nome_arquivo_found': 'xyz456.jpg'
+    }
+    """
+    create_table_matched(conn)  # Garantir que a tabela exista antes de inserir
+    query = """
+    INSERT INTO matched (
+        nome, email_user_lost, email_user_found, nome_arquivo_lost, nome_arquivo_found
+    ) VALUES (?, ?, ?, ?, ?)
+    """
     try:
         cursor = conn.cursor()
-        cursor.execute(query, (rosto_id, acao, ip, user_agent, detalhes))
+        cursor.execute(query, (
+            dados['nome'],
+            dados['email_user_lost'],
+            dados['email_user_found'],
+            dados['nome_arquivo_lost'],
+            dados['nome_arquivo_found']
+        ))
         conn.commit()
-        print(f"✅ Log registrado para rosto {rosto_id}")
-        return True
+        match_id = cursor.lastrowid
+        print(f"🟢 Match inserido com ID: {match_id}")
+        return match_id
+    except sqlite3.IntegrityError as e:
+        print(f"🚫 Erro de integridade: {e}")
+        return None
     except sqlite3.Error as e:
-        print(f"❌ Erro ao inserir log: {e}")
-        return False
+        print(f"🚫 Erro ao inserir: {e}")
+        return None
 
-def inserir_multiplos_rostos(conn, lista_rostos: List[Dict]) -> List[int]:
-    """Insere múltiplos rostos em lote (mais eficiente)"""
-    query = """
-    INSERT INTO rostos (
-        nome, nome_arquivo, caminho_arquivo,
-        tamanho_arquivo, tipo_arquivo, metadados
-    ) VALUES (?, ?, ?, ?, ?, ?)
+
+def insert_user(conn, dados: Dict[str, Any]) -> Optional[int]:
     """
-
-    dados_para_inserir = [
-        (
-            rosto.get('nome'),
-            rosto['nome_arquivo'],
-            rosto['caminho_arquivo'],
-            rosto.get('tamanho_arquivo'),
-            rosto.get('tipo_arquivo'),
-            rosto.get('metadados')
-        )
-        for rosto in lista_rostos
-    ]
-
+    Insere um novo usuário no banco
+    Exemplo de dados: {
+        'nome': 'João Silva',
+        'email': 'joao@example.com',
+        'contact': '123456789',
+    }
+    """
+    create_table_users(conn)  # Garantir que a tabela exista antes de inserir
+    query = """
+    INSERT INTO users (
+        nome, email, contact
+    ) VALUES (?, ?, ?)
+    """
     try:
         cursor = conn.cursor()
-        cursor.executemany(query, dados_para_inserir)
+        cursor.execute(query, (
+            dados['nome'],
+            dados['email'],
+            dados['contact']
+        ))
         conn.commit()
-
-        # Recuperar IDs inseridos
-        ids = []
-        for i in range(len(lista_rostos)):
-            ids.append(cursor.lastrowid - len(lista_rostos) + i + 1)
-
-        print(f"✅ Inseridos {len(ids)} rostos em lote")
-        return ids
-
+        user_id = cursor.lastrowid
+        print(f"🟢 Usuário inserido com ID: {user_id}")
+        return user_id
+    except sqlite3.IntegrityError as e:
+        print(f"🚫 Erro de integridade: {e}")
+        return None
     except sqlite3.Error as e:
-        print(f"❌ Erro na inserção em lote: {e}")
-        return []
+        print(f"🚫 Erro ao inserir: {e}")
+        return None

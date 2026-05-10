@@ -12,6 +12,11 @@ from utils import listar, face_check, valid_image
 import os
 from mangum import Mangum
 
+from sql_connection.insert_function import *
+from sql_connection.initial_db import *
+from sql_connection.table_creation import *
+from sql_connection.consult_function import *
+
 app = FastAPI(
     title="API de Alta Performance",
     version="1.0.0"
@@ -78,20 +83,26 @@ async def servir_imagem_simples(caminho_completo: str):
 async def faces_dashboard():
     absolute = "img/"
     try:
-        arquivos = listar.listar_arquivos(absolute)
+        #arquivos = listar.listar_arquivos(absolute)
+        conn = connect_db()
+        img_lost = search_faces(conn, status="lost")
+        print(f"img_lost: {img_lost}")
+        close_db(conn)
     except:
         print("Caminho invalido")
     id = 0
     result = []
-    base_url = "http://canned-tainted-washstand.ngrok-free.dev/"
-    for arquivo in arquivos:
-        nome = str(arquivo)
+    base_url = "http://10.18.32.206:4242/"
+    for img in img_lost:
         result.append(
             {
-                "id": id,
-                "nome": nome,
-                "imageUrl": base_url + "images/" + nome
-                })
+                "id": img['id'],
+                "nome": img['nome'],
+                "imageUrl": base_url + "images/" + img['nome_arquivo'],
+                "status": img['status'],
+                "data_upload": img['data_upload'],
+                "user_email": img['user_email']
+            })
         id += 1
     print(f"TIME:	  {datetime.now().strftime('%Hh%Mm%Ss.%f')}")
     return result
@@ -232,6 +243,22 @@ async def publicar_rosto(
         if nome == None:
             nome = "Unknown"
         print(f"🟢 {nome}, {nome_unico}, {str(caminho_imagem)}, {len(conteudo)}, {imagem.content_type}")
+        conn = connect_db()
+        dados_imagem = {
+            'nome': nome,
+            'user_email': 'anterofranciso@gmail.com',
+            'nome_arquivo': nome_unico,
+            "status": "lost"
+        }
+        data = insert_image(conn, dados_imagem)
+        if(not data):
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "message": "Erro ao publicar rosto"
+                }
+            )
+        close_db(conn)
         return JSONResponse(
             status_code=201,
             content={

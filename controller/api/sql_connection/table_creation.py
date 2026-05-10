@@ -3,63 +3,79 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 import json
-from initial_db import *
+from  sql_connection.initial_db import *
 
 
-# database.py (continuação)
+# CREATE TABLES
 
-def criar_tabela_rostos(conn):
-    """Cria tabela de rostos se não existir"""
+def create_table_images(conn):
+    """Cria tabela de imagens se não existir"""
     query = """
-    CREATE TABLE IF NOT EXISTS rostos (
+    CREATE TABLE IF NOT EXISTS images (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT,
+        user_email TEXT NOT NULL,
         nome_arquivo TEXT NOT NULL UNIQUE,
-        caminho_arquivo TEXT NOT NULL,
-        tamanho_arquivo INTEGER,
-        tipo_arquivo TEXT,
         data_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        status TEXT DEFAULT 'ativo',
-        metadados TEXT,
-        embedding TEXT
+        status TEXT DEFAULT 'useless'
     )
     """
-
     try:
         cursor = conn.cursor()
         cursor.execute(query)
         conn.commit()
-        print("🟢 Tabela 'rostos' criada/verificada com sucesso")
+        print("🟢 Tabela 'images' criada/verificada com sucesso")
         return True
     except sqlite3.Error as e:
         print(f"☠️ Erro ao criar tabela: {e}")
         return False
 
-def criar_tabela_logs(conn):
-    """Cria tabela de logs para auditoria"""
+
+def create_table_matched(conn):
+    """Cria tabela de matches se não existir"""
     query = """
-    CREATE TABLE IF NOT EXISTS logs_upload (
+    CREATE TABLE IF NOT EXISTS matched (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        rosto_id INTEGER,
-        acao TEXT NOT NULL,
-        ip_address TEXT,
-        user_agent TEXT,
-        data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        detalhes TEXT,
-        FOREIGN KEY (rosto_id) REFERENCES rostos(id)
+        nome TEXT,
+        email_user_lost TEXT NOT NULL,
+		email_user_found TEXT NOT NULL,
+        nome_arquivo_lost TEXT NOT NULL,
+        nome_arquivo_found TEXT NOT NULL,
+        data_match TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """
-
     try:
         cursor = conn.cursor()
         cursor.execute(query)
         conn.commit()
-        print("🟢 Tabela 'logs_upload' criada/verificada com sucesso")
+        print("🟢 Tabela 'matched' criada/verificada com sucesso")
+        return True
+    except sqlite3.Error as e:
+        print(f"☠️ Erro ao criar tabela: {e}")
+        return False
+
+
+def create_table_users(conn):
+    """Cria tabela de logs para auditoria"""
+    query = """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT,
+        email TEXT NOT NULL UNIQUE,
+        contact TEXT NOT NULL UNIQUE,
+        data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query)
+        conn.commit()
+        print("🟢 Tabela 'users' criada/verificada com sucesso")
         return True
     except sqlite3.Error as e:
         print(f"☠️ Erro ao criar tabela de logs: {e}")
         return False
+
 
 def criar_indices(conn):
     """Cria índices para melhor performance"""
@@ -69,7 +85,6 @@ def criar_indices(conn):
         "CREATE INDEX IF NOT EXISTS idx_status ON rostos(status)",
         "CREATE INDEX IF NOT EXISTS idx_nome_arquivo ON rostos(nome_arquivo)"
     ]
-
     try:
         cursor = conn.cursor()
         for index in indices:
@@ -81,15 +96,13 @@ def criar_indices(conn):
         print(f"☠️ Erro ao criar índices: {e}")
         return False
 
+
 def inicializar_banco():
     """Inicializa todas as tabelas e índices"""
-    conn = conectar_banco()
+    conn = connect_db()
     if not conn:
         return False
-
-    criar_tabela_rostos(conn)
-    criar_tabela_logs(conn)
-    criar_indices(conn)
-
-    fechar_banco(conn)
+    create_table_images(conn)
+    create_table_users(conn)
+    close_db(conn)
     return True

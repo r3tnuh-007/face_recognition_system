@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://35.232.113.96:8000';
+const API_BASE_URL = 'http://10.18.32.206:8000';
 
 async function carregarRostos() {
     const galleryContainer = document.getElementById('galleryContainer');
@@ -45,7 +45,7 @@ function exibirRostos(faces) {
                  onerror="this.src='https://via.placeholder.com/250x250?text=Erro+Imagem'">
             <div class="face-info">
                 <div class="face-name">${face.nome || 'Anônimo'}</div>
-                <div class="face-date">${face.data || new Date().toLocaleDateString()}</div>
+                <div class="face-date">${face.data_upload}</div>
             </div>
         </div>
     `).join('');
