@@ -36,7 +36,7 @@ async function pesquisarRostosSimilares(imagemFile) {
         return;
     }
 
-    mostrarResultado('🔍 Pesquisando rostos similares...', 'loading');
+    mostrarResultado('🔍 Pesquisando rostos similares<br>Essa operação pode demorar um pouco...', 'loading');
 
     try {
         const formData = new FormData();
@@ -50,7 +50,7 @@ async function pesquisarRostosSimilares(imagemFile) {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Erro ao pesquisar');
+            throw new Error(error.message);
         }
 
         const resultados = await response.json();
@@ -115,7 +115,7 @@ function mostrarResultado(mensagem, tipo) {
             className = 'info-text';
     }
 
-    searchResults.innerHTML = `<div class="${className}">${icon} ${mensagem}</div>`;
+    searchResults.innerHTML = `<div class="${className}"><small>${icon} ${mensagem}</small></div>`;
 }
 
 // Event Listeners

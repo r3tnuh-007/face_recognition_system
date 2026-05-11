@@ -160,20 +160,24 @@ async def search_face(
         insert_image(conn, data)
         face =  await face_check.check_face(str(caminho_imagem))
         if (not face):
-            raise HTTPException(
-                    status_code=400,
-                    message="Rosto nao detectado"
-                )
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "message": "Face not detected"
+                }
+            )
         imgs = search_faces(conn, status="lost")
         print(imgs)
         try:
             re = await task_builder(str(caminho_imagem), array)
             print(re)
         except:
-            raise HTTPException(
-                    status_code=400,
-                    message="sothing went wrong with photo search"
-                )
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "message": "Something went wrong with the photo"
+                }
+            )
         data = []
         base_url = "http://10.18.32.206:4242/"
         for img in re:
@@ -202,7 +206,7 @@ async def search_face(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Erro interno ao processar upload: {str(e)}"
+            message=f"Erro interno ao processar upload: {str(e)}"
         )
 
 
