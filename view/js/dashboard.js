@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.18.32.206:8000';
+const API_BASE_URL = 'http://192.168.8.55:8000';
 
 async function carregarRostos() {
     const galleryContainer = document.getElementById('galleryContainer');

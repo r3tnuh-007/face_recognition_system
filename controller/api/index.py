@@ -47,6 +47,8 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 
+base_url = "http://192.168.8.55:8000/"
+
 @app.get("/")
 async def home():
     return {"mensagem": "Face recognition rodando com alta performance!",
@@ -94,7 +96,6 @@ async def faces_dashboard():
         print("Caminho invalido")
     id = 0
     result = []
-    base_url = "http://10.18.32.206:4242/"
     for img in img_lost:
         result.append(
             {
@@ -167,6 +168,9 @@ async def search_face(
                 }
             )
         imgs = search_faces(conn, status="lost")
+        array = []
+        for img_single in imgs:
+            array.append("img/" + img_single['nome_arquivo'])
         print(imgs)
         try:
             re = await task_builder(str(caminho_imagem), array)
@@ -179,7 +183,6 @@ async def search_face(
                 }
             )
         data = []
-        base_url = "http://10.18.32.206:4242/"
         for img in re:
             if img[0]:
                 img_lost = search_face_by_filename(conn, img[1])
@@ -197,7 +200,6 @@ async def search_face(
                     "user_email": img_lost['user_email'],
                     "status": img_lost['status']
                 })
-                delete_face(conn, img['id'], True)
         close_db(conn)
         return JSONResponse(
             status_code=201,

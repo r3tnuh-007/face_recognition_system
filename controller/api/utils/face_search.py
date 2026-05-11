@@ -39,12 +39,4 @@ async def task_builder(img1, imgs):
 	print(results)
 	return results
 
-array = [
-		"./img/20260510_230251_teste_4_687d779b.jpg",
-		"./img/20260510_224845_teste_2_e68f78e4.jpg",
-		"./img/20260510_224712_teste_1_2dc02c33.jpg",
-		"./img/20260510_224454_gustavo_f5f05e14.jpg",
-		"./img/20260510_224151_rosto_af830750.jpg",
-		"./img/20260510_224127_gustavo_1_9csww.jpg"
-]
 # Usa a função
