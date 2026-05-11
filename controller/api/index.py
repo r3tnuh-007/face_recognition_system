@@ -17,6 +17,8 @@ from sql_connection.initial_db import *
 from sql_connection.table_creation import *
 from sql_connection.consult_function import *
 
+from utils.face_search import *
+
 app = FastAPI(
     title="API de Alta Performance",
     version="1.0.0"
@@ -48,7 +50,7 @@ ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 @app.get("/")
 async def home():
     return {"mensagem": "Face recognition rodando com alta performance!",
-            "Owner": "r3tnuh-007"
+            "Owner": "r3tnuh-007 Ice heart"
             }
 
 
@@ -132,7 +134,7 @@ async def search_face(
         pasta_data = UPLOAD_DIR
         # Gerar nome único
         extensao = Path(imagem.filename).suffix.lower()
-        nome = "Unknown"
+        nome = "Unknown_found"
         nome_base = nome.replace(" ", "_") if nome else "rosto"
         nome_unico = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{nome_base}_{uuid.uuid4().hex[:8]}{extensao}"
         # Caminho final
@@ -148,40 +150,137 @@ async def search_face(
                 )
             await buffer.write(conteudo)
         # Retornar resposta de sucesso
+        conn = connect_db()
+        data = {
+            "nome": nome,
+            "nome_arquivo": nome_unico,
+            "user_email": "anterofranciso@gmail.com",
+            "status": "found"
+        }
+        insert_image(conn, data)
         face =  await face_check.check_face(str(caminho_imagem))
-        print(f"saiu da funcao check, resultado:{face}")
         if (not face):
             raise HTTPException(
                     status_code=400,
                     message="Rosto nao detectado"
                 )
-        print(f"🟢 {nome}, {nome_unico}, {caminho_imagem}, {len(conteudo)}, {imagem.content_type}")
-        print("vai retornar")
+        imgs = search_faces(conn, status="lost")
+        print(imgs)
+        try:
+            re = await task_builder(str(caminho_imagem), array)
+            print(re)
+        except:
+            raise HTTPException(
+                    status_code=400,
+                    message="sothing went wrong with photo search"
+                )
+        data = []
+        base_url = "http://10.18.32.206:4242/"
+        for img in re:
+            if img[0]:
+                img_lost = search_face_by_filename(conn, img[1])
+                print(f"detalhes da imagem: {img_lost}")
+                data.append({
+                    "message": "🟢 Pessoa encontrada com sucesso!",
+                    "id": img_lost['id'],
+                    "nome": img_lost['nome'],
+                    "arquivo": img[1],
+                    "imageUrl": base_url + "images/" + img[1],
+                    "tamanho": len(conteudo),
+                    "tipo": imagem.content_type,
+                    "data_upload": img_lost['data_upload'],
+                    "similarity": 0.96,
+                    "user_email": img_lost['user_email']
+                })
+        close_db(conn)
         return JSONResponse(
             status_code=201,
-            content=[{
-                "message": "🟢 Pessoa encontrada com sucesso!",
-                "id": 42,
-                "nome": nome,
-                "arquivo": nome_unico,
-                "imageUrl": str(caminho_imagem),
-                "tamanho": len(conteudo),
-                "tipo": imagem.content_type,
-                "data_upload": datetime.now().isoformat(),
-                "similarity": 0.9
-            },
-            {
-                "message": "🟢 Pessoa encontrada com sucesso!",
-                "id": 4242,
-                "nome": nome,
-                "arquivo": nome_unico,
-                "imageUrl": "img/found/2026/05/20260508_132212_Unknown_6d15db23.jpg",
-                "tamanho": len(conteudo),
+            content=data
+        )
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro interno ao processar upload: {str(e)}"
+        )
+
+
+@app.post("/faces")
+async def publicar_rosto(
+    imagem: UploadFile = File(..., description="Arquivo de imagem do rosto"),
+    nome: Optional[str] = Form(None, description="Nome opcional da pessoa")
+    ):
+    """
+    Endpoint para upload de imagem de rosto
+    """
+    try:
+        # Validar tamanho (verificar headers primeiro)
+        if hasattr(imagem, 'size') and imagem.size > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Arquivo muito grande! Máximo: {MAX_FILE_SIZE // 1024 // 1024}MB"
+            )
+        # Validar tipo de arquivo
+        if not valid_image.validar_imagem(imagem):
+            raise HTTPException(
+            status_code=400,
+            detail=f"Extensão não permitida. Use: {', '.join(ALLOWED_EXTENSIONS)}"
+            )
+        # Criar estrutura de pastas por data
+        pasta_data = UPLOAD_DIR
+        # Gerar nome único
+        extensao = Path(imagem.filename).suffix.lower()
+        nome_base = nome.replace(" ", "_") if nome else "rosto"
+        nome_unico = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{nome_base}_{uuid.uuid4().hex[:8]}{extensao}"
+        # Caminho final
+        caminho_imagem = pasta_data / nome_unico
+        # Salvar imagem com aiofiles (assíncrono)
+        async with aiofiles.open(caminho_imagem, 'wb') as buffer:
+            conteudo = await imagem.read()
+            # Verificar tamanho após leitura
+            if len(conteudo) > MAX_FILE_SIZE:
+                raise HTTPException(
+                    status_code=413,
+                    detail="Arquivo excede o tamanho máximo permitido"
+                )
+            await buffer.write(conteudo)
+        # Retornar resposta de sucesso
+        #caminho_image = str(caminho_imagem)
+        face =  await face_check.check_face(caminho_imagem)
+        if (not face):
+            return JSONResponse(
+                status_code=400,
+                content={
+                "message": "Face not detected"
+            })
+        if nome == None:
+            nome = "Unknown"
+        print(f"🟢 {nome}, {nome_unico}, {str(caminho_imagem)}, {len(conteudo)}, {imagem.content_type}")
+        conn = connect_db()
+        dados_imagem = {
+            'nome': nome,
+            'user_email': 'anterofranciso@gmail.com',
+            'nome_arquivo': nome_unico,
+            "status": "lost"
+        }
+        data = insert_image(conn, dados_imagem)
+        if(not data):
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "message": "Erro ao publicar rosto"
+                }
+            )
+        close_db(conn)
+        return JSONResponse(
+            status_code=201,
+            content={
+                "message": "🟢 Rosto publicado com sucesso!",
                 "tipo": imagem.content_type,
                 "data_upload": datetime.now().isoformat(),
                 "similarity": 0.9
             }
-            ]
         )
     except HTTPException as he:
         raise he

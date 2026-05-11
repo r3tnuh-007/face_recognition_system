@@ -59,8 +59,6 @@ async function pesquisarRostosSimilares(imagemFile) {
             mostrarResultado('😔 Nenhum rosto similar encontrado. \nInformaremos assim que encontrarmos a sua pessoa', 'info');
             return;
         }
-
-        alert(resultados[1].imageUrl);
         exibirResultados(resultados);
 
     } catch (error) {
@@ -84,7 +82,7 @@ function exibirResultados(resultados) {
                     <div class="result-info">
                         <div class="result-name">${result.nome}</div>
                         <div class="result-similarity">
-                            Similaridade: ${(result.similarity * 100).toFixed(2)}%
+                            Email: ${result.user_email}
                         </div>
                         <small>ID: ${result.id}</small>
                     </div>
