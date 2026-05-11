@@ -194,8 +194,10 @@ async def search_face(
                     "tipo": imagem.content_type,
                     "data_upload": img_lost['data_upload'],
                     "similarity": 0.96,
-                    "user_email": img_lost['user_email']
+                    "user_email": img_lost['user_email'],
+                    "status": img_lost['status']
                 })
+                delete_face(conn, img['id'], True)
         close_db(conn)
         return JSONResponse(
             status_code=201,
