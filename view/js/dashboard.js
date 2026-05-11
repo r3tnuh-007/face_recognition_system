@@ -54,7 +54,11 @@ function exibirRostos(faces) {
     document.querySelectorAll('.face-card').forEach(card => {
         card.addEventListener('click', () => {
             const id = card.dataset.id;
-            alert(`Detalhes do rosto ID: ${id}\nFuncionalidade em desenvolvimento`);
+            const tamanho = faces.length;
+            alert(`FindMyPerson DETAILS PAINEL\n
+    ID do desaparecido: ${tamanho - id + 1}\n
+    email para contactar: ${faces[tamanho - id].user_email}\n
+    ${faces[tamanho - id].nome ? `Nome do desaparecido: ${faces[tamanho - id].nome}\n` : ''}`);
         });
     });
 }
